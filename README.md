@@ -5,16 +5,21 @@ This is a jQuery plugin that takes an image selector as an argument having a SVG
 ## Usage ##
 
 ### HTML ###
-```<img class="svg" src="http://addc.digitaslbiacademy.com/img/icon/svg/00-login.svg" alt="" />```
+```
+<img class="svg" src="http://addc.digitaslbiacademy.com/img/icon/svg/00-login.svg" alt="" />
+
+```
 
 
 ### CSS ###
 ```
-#!CSS
 .svg path stroke {
 	color:#00ff88;
 }
 ```
 
 ### JS ###
-```$('.svg').inlineSVG();```
+```
+$('.svg').inlineSVG();
+
+```
