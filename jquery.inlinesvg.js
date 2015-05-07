@@ -13,10 +13,10 @@
             eachAfter: null,
             allAfter: null
         }, (options || {}));
-        
+
         var $list = this;
         var counter = 0;
-        
+
         return $list.each(function(){
 			
             var $img = jQuery(this);
@@ -43,10 +43,10 @@
                 // Replace image with new SVG
                 $img.replaceWith($svg);
 
-                // callback for each element
+                // Callback for each element
                 options.eachAfter && options.eachAfter.call($svg.get(0));
-                
-                // check for all is completed
+
+                // Check for all is completed
                 if (++counter === $list.length) {
                     options.allAfter && options.allAfter.call(null);
                 }
