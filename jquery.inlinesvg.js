@@ -7,10 +7,18 @@
  */
 
 (function($){
-    $.fn.inlineSVG = function(){
-
-        return this.each(function(){
-
+    $.fn.inlineSVG = function(options){
+		
+        options = $.extend({
+            eachAfter: null,
+            allAfter: null
+        }, (options || {}));
+        
+        var $list = this;
+        var counter = 0;
+        
+        return $list.each(function(){
+			
             var $img = jQuery(this);
             var imgID = $img.attr('id');
             var imgClass = $img.attr('class');
@@ -34,6 +42,14 @@
 
                 // Replace image with new SVG
                 $img.replaceWith($svg);
+
+                // callback for each element
+                options.eachAfter && options.eachAfter.call($svg.get(0));
+                
+                // check for all is completed
+                if (++counter === $list.length) {
+                    options.allAfter && options.allAfter.call(null);
+                }
 
             }, 'xml');
 
