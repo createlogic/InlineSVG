@@ -8,7 +8,7 @@
 
 (function($){
     $.fn.inlineSVG = function(options){
-		
+
         options = $.extend({
             eachAfter: null,
             allAfter: null
@@ -18,7 +18,7 @@
         var counter = 0;
 
         return $list.each(function(){
-			
+
             var $img = jQuery(this);
             var imgID = $img.attr('id');
             var imgClass = $img.attr('class');
