@@ -29,6 +29,19 @@ $('.svg').inlineSVG();
 
 ```
 
+## Use callbacks ##
+
+```javascript
+$('.svg').inlineSVG({
+    eachAfter: function () {
+        console.log('One element is replaced');
+    },
+    allAfter: function () {
+        console.log('All elements is replaced');
+    }
+});
+```
+
 ## License ##
 
 [MIT](./LICENSE-MIT)
