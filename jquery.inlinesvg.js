@@ -3,7 +3,7 @@
  * https://github.com/createlogic/InlineSVG
  * Copyright (c) 2010 - 2015 Bilal Niaz Awan
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 
 (function($){
