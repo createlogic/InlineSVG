@@ -19,14 +19,14 @@
 
         return $list.each(function(){
 
-            var $img = jQuery(this);
+            var $img = $(this);
             var imgID = $img.attr('id');
             var imgClass = $img.attr('class');
             var imgURL = $img.attr('src');
 
-            jQuery.get(imgURL, function(data) {
+            $.get(imgURL, function(data){
                 // Get the SVG tag, ignore the rest
-                var $svg = jQuery(data).find('svg');
+                var $svg = $(data).find('svg');
 
                 // Add replaced image's ID to the new SVG
                 if(typeof imgID !== 'undefined') {
@@ -52,7 +52,6 @@
                 }
 
             }, 'xml');
-
 
         });
     };
