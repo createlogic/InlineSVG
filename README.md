@@ -9,7 +9,10 @@ using plain CSS.
 
 ### HTML ###
 ```html
-<img class="svg" src="http://addc.digitaslbiacademy.com/img/icon/svg/00-login.svg" alt="" />
+<img
+    class="svg"
+    src="http://addc.digitaslbiacademy.com/img/icon/svg/00-login.svg"
+    alt="" />
 
 ```
 
