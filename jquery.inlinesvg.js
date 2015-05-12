@@ -32,7 +32,8 @@
 
         options = $.extend({
             eachAfter: null,
-            allAfter: null
+            allAfter: null,
+            replacedClass: 'replaced-svg'
         }, (options || {}));
 
         var $list = this;
@@ -48,18 +49,24 @@
             $.get(imgURL, function (data) {
                 // Get the SVG tag, ignore the rest
                 var $svg = $(data).find('svg');
+                var classes = [];
 
                 // Add replaced image's ID to the new SVG
-                if (typeof imgID !== 'undefined') {
-                    $svg = $svg.attr('id', imgID);
-                }
-                // Add replaced image's classes to the new SVG
-                if (typeof imgClass !== 'undefined') {
-                    $svg = $svg.attr('class', imgClass+' replaced-svg');
+                if (imgID) {
+                    $svg.attr('id', imgID);
                 }
 
+                // Add replaced image's classes to the new SVG
+                if (imgClass) {
+                    classes.push(imgClass);
+                }
+                if (options.replacedClass) {
+                    classes.push(options.replacedClass);
+                }
+                $svg.attr('class', classes.join(' '));
+
                 // Remove any invalid XML tags as per http://validator.w3.org
-                $svg = $svg.removeAttr('xmlns:a');
+                $svg.removeAttr('xmlns:a');
 
                 // Replace image with new SVG
                 $img.replaceWith($svg);
