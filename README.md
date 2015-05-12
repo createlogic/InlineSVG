@@ -34,6 +34,7 @@ $('.svg').inlineSVG();
 ```javascript
 $('.svg').inlineSVG({
     eachAfter: function () {
+        // this - is replaced <svg> DOM-element
         console.log('One element is replaced');
     },
     allAfter: function () {
