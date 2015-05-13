@@ -40,7 +40,7 @@
      * @property {?Function} [allAfter] - Callback after all elements is replaced
      * @property {?String} [replacedClass='replaced-svg'] - Class to add to new <svg> DOM-element
      * @property {Boolean} [keepSize=true] - Set "width" and "height" attributes from source <img> to new <svg>
-     * @property {Boolean} [keepStyles=true] - Set "style" attribute from source <img> to new <svg>
+     * @property {Boolean} [keepStyle=true] - Set "style" attribute from source <img> to new <svg>
      */
 
     /**
@@ -59,7 +59,7 @@
             allAfter: null,
             replacedClass: 'replaced-svg',
             keepSize: true,
-            keepStyles: true
+            keepStyle: true
         }, (options || {}));
 
         var $list = this;
@@ -105,11 +105,11 @@
                         $svg.attr('height', h);
                     }
                 }
-                if (options.keepStyles) {
-                    var styles = $img.attr('style');
+                if (options.keepStyle) {
+                    var style = $img.attr('style');
 
-                    if (styles) {
-                        $svg.attr('style', styles);
+                    if (style) {
+                        $svg.attr('style', style);
                     }
                 }
 
