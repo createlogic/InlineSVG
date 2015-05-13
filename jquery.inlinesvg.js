@@ -37,10 +37,34 @@
      */
 
     /**
+     * @callback jQuery.inlineSVG~eachAfter
+     * @this DOM
+     */
+
+    /**
+     * @callback jQuery.inlineSVG~allAfter
+     * @this null
+     */
+
+    /**
+     * @callback jQuery.inlineSVG~beforeReplace
+     * @param {jQuery} $img - Source <img> element
+     * @param {jQuery} $svg - <svg> element to replace
+     * @param {jQuery.inlineSVG~beforeReplaceNext} next - Callback to next element
+     * @this null
+     */
+
+    /**
+     * @callback jQuery.inlineSVG~beforeReplaceNext
+     * @param {Boolean} [replace=true] - Replace element otherwise just go to next
+     */
+
+    /**
      * @typedef {Object} jQuery.inlineSVG~options
-     * @property {?Function} [eachAfter] - Callback for each replaced element
-     * @property {?Function} [allAfter] - Callback after all elements is replaced
-     * @property {?String} [replacedClass='replaced-svg'] - Class to add to new <svg> DOM-element
+     * @property {?jQuery.inlineSVG~eachAfter} [eachAfter] - Callback for each replaced <img> element
+     * @property {?jQuery.inlineSVG~allAfter} [allAfter] - Callback after all <img> elements is replaced
+     * @property {?jQuery.inlineSVG~beforeReplaceCallback} [beforeReplace] - Callback for each item before replaced
+     * @property {?String} [replacedClass='replaced-svg'] - Class name to add to new <svg> DOM-element
      * @property {Boolean} [keepSize=true] - Set "width" and "height" attributes from source <img> to new <svg>
      * @property {Boolean} [keepStyle=true] - Set "style" attribute from source <img> to new <svg>
      */
@@ -59,6 +83,7 @@
         options = $.extend({
             eachAfter: null,
             allAfter: null,
+            beforeReplace: null,
             replacedClass: 'replaced-svg',
             keepSize: true,
             keepStyle: true
@@ -75,6 +100,7 @@
             var imgURL = $img.attr('src');
 
             $.get(imgURL, function (data) {
+
                 // Get the SVG tag, ignore the rest
                 var $svg = $(data).find('svg');
                 var classes = [];
@@ -115,15 +141,30 @@
                     }
                 }
 
-                // Replace image with new SVG
-                $img.replaceWith($svg);
+                function cb(replace) {
 
-                // Callback for each element
-                options.eachAfter && options.eachAfter.call($svg.get(0));
+                    replace = ($.type(replace) === 'boolean') ? replace : true;
 
-                // Check for all is completed
-                if (++counter === $list.length) {
-                    options.allAfter && options.allAfter.call(null);
+                    if (replace) {
+                        // Replace image with new SVG
+                        $img.replaceWith($svg);
+
+                        // Callback for each element
+                        options.eachAfter && options.eachAfter.call($svg.get(0));
+                    } else {
+                        $svg.remove();
+                    }
+
+                    // Check for all is completed
+                    if (++counter === $list.length) {
+                        options.allAfter && options.allAfter.call(null);
+                    }
+                }
+
+                if (options.beforeReplace) {
+                    options.beforeReplace.call(null, $img, $svg, cb);
+                } else {
+                    cb();
                 }
 
             }, 'xml');
