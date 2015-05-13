@@ -28,6 +28,28 @@
  */
 
 (function ($) {
+
+    /**
+     * @name jQuery
+     * @constructor
+     */
+
+    /**
+     * @typedef {Object} jQuery.inlineSVG~options
+     * @property {?Function} [eachAfter] - Callback for each replaced element
+     * @property {?Function} [allAfter] - Callback after all elements is replaced
+     * @property {?String} [replacedClass='replaced-svg'] - Class to add to new <svg> DOM-element
+     */
+
+    /**
+     * @name inlineSVG
+     * @memberof jQuery
+     * @param {jQuery.inlineSVG~options} [options]
+     * @this jQuery
+     * @returns {jQuery} Source jQuery instance
+     * @public
+     * @static
+     */
     $.fn.inlineSVG = function (options) {
 
         options = $.extend({
