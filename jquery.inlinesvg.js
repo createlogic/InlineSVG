@@ -6,7 +6,7 @@
  * be manipulated using plain CSS.
  *
  * @license MIT
- * @version 1.1.0
+ * @version 2.0.0
  * @see {@link https://github.com/createlogic/InlineSVG|GitHub}
  *
  * The MIT License (MIT)
