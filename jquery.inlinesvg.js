@@ -29,6 +29,8 @@
 
 (function ($) {
 
+    'use strict';
+
     /**
      * @name jQuery
      * @constructor
