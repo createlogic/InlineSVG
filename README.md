@@ -39,6 +39,10 @@ $('.svg').inlineSVG({
     },
     allAfter: function () {
         console.log('All elements is replaced');
+    },
+    beforeReplace: function ($img, $svg, next) {
+        $svg.attr('title', $img.attr('alt'));
+        next();
     }
 });
 ```
