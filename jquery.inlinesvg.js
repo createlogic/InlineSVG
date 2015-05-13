@@ -2,7 +2,7 @@
  * jquery.inlinesvg
  *
  * @license MIT
- * @version: 1.1.0
+ * @version 1.1.0
  * @see {@link https://github.com/createlogic/InlineSVG|GitHub}
  *
  * The MIT License (MIT)
@@ -39,6 +39,8 @@
      * @property {?Function} [eachAfter] - Callback for each replaced element
      * @property {?Function} [allAfter] - Callback after all elements is replaced
      * @property {?String} [replacedClass='replaced-svg'] - Class to add to new <svg> DOM-element
+     * @property {Boolean} [keepSize=true] - Set "width" and "height" attributes from source <img> to new <svg>
+     * @property {Boolean} [keepStyles=true] - Set "style" attribute from source <img> to new <svg>
      */
 
     /**
@@ -55,7 +57,9 @@
         options = $.extend({
             eachAfter: null,
             allAfter: null,
-            replacedClass: 'replaced-svg'
+            replacedClass: 'replaced-svg',
+            keepSize: true,
+            keepStyles: true
         }, (options || {}));
 
         var $list = this;
@@ -89,6 +93,25 @@
 
                 // Remove any invalid XML tags as per http://validator.w3.org
                 $svg.removeAttr('xmlns:a');
+
+                if (options.keepSize) {
+                    var w = $img.attr('width');
+                    var h = $img.attr('height');
+
+                    if (w) {
+                        $svg.attr('width', w);
+                    }
+                    if (h) {
+                        $svg.attr('height', h);
+                    }
+                }
+                if (options.keepStyles) {
+                    var styles = $img.attr('style');
+
+                    if (styles) {
+                        $svg.attr('style', styles);
+                    }
+                }
 
                 // Replace image with new SVG
                 $img.replaceWith($svg);
