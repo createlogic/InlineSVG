@@ -21,8 +21,11 @@
   "ignore": [
     "**/.*",
     "bower_components",
+    "node_modules",
+    "gulpfile.js",
     "README.md",
-    ".editorconfig"
+    ".editorconfig",
+    ".gitignore"
   ],
   "dependencies": {
     "jquery": ">=1.11"
