@@ -90,7 +90,8 @@
             beforeReplace: null,
             replacedClass: 'replaced-svg',
             keepSize: true,
-            keepStyle: true
+            keepStyle: true,
+            randomId: true
         }, (options || {}));
 
         var $list = this;
@@ -104,7 +105,21 @@
             var imgURL = $img.attr('src');
 
             $.get(imgURL, function (data) {
-
+                // Replace svg id with random ids
+                if (options.randomId) {
+                    var strData = data.documentElement.innerHTML;
+                    var $ids = $(data).find('[id]');
+                    Array.prototype.map.call($ids, function(ele){return ele.id}).reduce(function (prev, curr){
+                        var rand = Math.random().toFixed(9).split('.')[1];
+                        var tempRegex = new RegExp('\"'+String(curr)+'\"','g');
+                        var tempRegexReferenced = new RegExp('\"#'+String(curr)+'\"','g');
+                        strData = strData.replace(tempRegex, '"inlineSVG-'+curr+rand+'"');
+                        strData = strData.replace(tempRegexReferenced, '"#inlineSVG-'+curr+rand+'"');
+                    },undefined);
+                    data.documentElement.innerHTML = strData;
+                }
+                
+                
                 // Get the SVG tag, ignore the rest
                 var $svg = $(data).find('svg');
                 var classes = [];
