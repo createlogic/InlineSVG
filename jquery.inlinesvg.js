@@ -35,6 +35,10 @@
 
     'use strict';
 
+    // Cache responses so we don't need to make
+    // uplicate requests for the same image
+    var cache = {};
+
     /**
      * @name jQuery
      * @constructor
@@ -90,7 +94,8 @@
             beforeReplace: null,
             replacedClass: 'replaced-svg',
             keepSize     : true,
-            keepStyle    : true
+            keepStyle    : true,
+            useCache     : true
         }, (options || {}) );
 
         var $list = this;
@@ -99,11 +104,15 @@
         return $list.each ( function () {
 
             var $img = $ ( this );
-            var imgID = $img.attr ( 'id' );
-            var imgClass = $img.attr ( 'class' );
-            var imgURL = $img.attr ( 'src' );
+            var imgURL = $img.attr ( 'data-src' );
 
-            $.get ( imgURL, function ( data ) {
+            var replace = function ( d, $img ) {
+
+                var data = $.parseXML ( d );
+                var imgID = $img.attr ( 'id' );
+                var imgClass = $img.attr ( 'class' );
+                var imgURL = $img.attr ( 'data-src' );
+                var _img;
 
                 // Get the SVG tag, ignore the rest
                 var $svg = $ ( data ).find ( 'svg' );
@@ -171,7 +180,47 @@
                     cb ();
                 }
 
-            }, 'xml' );
+                // If there are images waiting => replace them too
+                if ( cache[ imgURL ].imgs.length ) {
+                    while ( (_img = cache[ imgURL ].imgs.shift ()) ) {
+                        replace ( d, _img );
+                    }
+                }
+
+            };
+
+            // Second request to the same url will end up here
+            if ( options.useCache && cache[ imgURL ] ) {
+
+                // If the first (ajax) request has been resolved
+                if ( cache[ imgURL ].response ) {
+
+                    // Simply replace the img from cache
+                    replace ( cache[ imgURL ].response, $img );
+
+                } else {
+
+                    // If response is still pending, store the img object
+                    cache[ imgURL ].imgs.push ( $img );
+
+                }
+
+            } else {
+
+                // Init cache object
+                cache[ imgURL ] = {
+                    imgs    : [],
+                    response: null
+                };
+
+                // First request to a URL always goes here
+                $.get ( imgURL, function ( d ) {
+
+                    replace ( cache[ imgURL ].response = d, $img );
+
+                }, 'text' );
+
+            }
 
         } );
     };
