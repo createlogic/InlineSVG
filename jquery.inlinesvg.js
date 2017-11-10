@@ -31,9 +31,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function ($) {
+(function ( $ ) {
 
     'use strict';
+
+    // Cache responses so we don't need to make
+    // uplicate requests for the same image
+    var cache = {};
 
     /**
      * @name jQuery
@@ -82,97 +86,142 @@
      * @public
      * @static
      */
-    $.fn.inlineSVG = function (options) {
+    $.fn.inlineSVG = function ( options ) {
 
-        options = $.extend({
-            eachAfter: null,
-            allAfter: null,
+        options = $.extend ( {
+            eachAfter    : null,
+            allAfter     : null,
             beforeReplace: null,
             replacedClass: 'replaced-svg',
-            keepSize: true,
-            keepStyle: true
-        }, (options || {}));
+            keepSize     : true,
+            keepStyle    : true,
+            useCache     : true
+        }, (options || {}) );
 
         var $list = this;
         var counter = 0;
 
-        return $list.each(function () {
+        return $list.each ( function () {
 
-            var $img = $(this);
-            var imgID = $img.attr('id');
-            var imgClass = $img.attr('class');
-            var imgURL = $img.attr('src');
+            var $img = $ ( this );
+            var imgURL = $img.attr ( 'data-src' );
 
-            $.get(imgURL, function (data) {
+            var replace = function ( d, $img ) {
+
+                var data = $.parseXML ( d );
+                var imgID = $img.attr ( 'id' );
+                var imgClass = $img.attr ( 'class' );
+                var imgURL = $img.attr ( 'data-src' );
+                var _img;
 
                 // Get the SVG tag, ignore the rest
-                var $svg = $(data).find('svg');
+                var $svg = $ ( data ).find ( 'svg' );
                 var classes = [];
 
                 // Add replaced image's ID to the new SVG
-                if (imgID) {
-                    $svg.attr('id', imgID);
+                if ( imgID ) {
+                    $svg.attr ( 'id', imgID );
                 }
 
                 // Add replaced image's classes to the new SVG
-                if (imgClass) {
-                    classes.push(imgClass);
+                if ( imgClass ) {
+                    classes.push ( imgClass );
                 }
-                if (options.replacedClass) {
-                    classes.push(options.replacedClass);
+                if ( options.replacedClass ) {
+                    classes.push ( options.replacedClass );
                 }
-                $svg.attr('class', classes.join(' '));
+                $svg.attr ( 'class', classes.join ( ' ' ) );
 
                 // Remove any invalid XML tags as per http://validator.w3.org
-                $svg.removeAttr('xmlns:a');
+                $svg.removeAttr ( 'xmlns:a' );
 
-                if (options.keepSize) {
-                    var w = $img.attr('width');
-                    var h = $img.attr('height');
+                if ( options.keepSize ) {
+                    var w = $img.attr ( 'width' );
+                    var h = $img.attr ( 'height' );
 
-                    if (w) {
-                        $svg.attr('width', w);
+                    if ( w ) {
+                        $svg.attr ( 'width', w );
                     }
-                    if (h) {
-                        $svg.attr('height', h);
-                    }
-                }
-                if (options.keepStyle) {
-                    var style = $img.attr('style');
-
-                    if (style) {
-                        $svg.attr('style', style);
+                    if ( h ) {
+                        $svg.attr ( 'height', h );
                     }
                 }
+                if ( options.keepStyle ) {
+                    var style = $img.attr ( 'style' );
 
-                function cb(replace) {
+                    if ( style ) {
+                        $svg.attr ( 'style', style );
+                    }
+                }
 
-                    replace = ($.type(replace) === 'boolean') ? replace : true;
+                function cb ( replace ) {
 
-                    if (replace) {
+                    replace = ($.type ( replace ) === 'boolean') ? replace : true;
+
+                    if ( replace ) {
                         // Replace image with new SVG
-                        $img.replaceWith($svg);
+                        $img.replaceWith ( $svg );
 
                         // Callback for each element
-                        options.eachAfter && options.eachAfter.call($svg.get(0));
+                        options.eachAfter && options.eachAfter.call ( $svg.get ( 0 ) );
                     } else {
-                        $svg.remove();
+                        $svg.remove ();
                     }
 
                     // Check for all is completed
-                    if (++counter === $list.length) {
-                        options.allAfter && options.allAfter.call(null);
+                    if ( ++counter === $list.length ) {
+                        options.allAfter && options.allAfter.call ( null );
                     }
                 }
 
-                if (options.beforeReplace) {
-                    options.beforeReplace.call(null, $img, $svg, cb);
+                if ( options.beforeReplace ) {
+                    options.beforeReplace.call ( null, $img, $svg, cb );
                 } else {
-                    cb();
+                    cb ();
                 }
 
-            }, 'xml');
+                // If there are images waiting => replace them too
+                if ( cache[ imgURL ].imgs.length ) {
+                    while ( (_img = cache[ imgURL ].imgs.shift ()) ) {
+                        replace ( d, _img );
+                    }
+                }
 
-        });
+            };
+
+            // Second request to the same url will end up here
+            if ( options.useCache && cache[ imgURL ] ) {
+
+                // If the first (ajax) request has been resolved
+                if ( cache[ imgURL ].response ) {
+
+                    // Simply replace the img from cache
+                    replace ( cache[ imgURL ].response, $img );
+
+                } else {
+
+                    // If response is still pending, store the img object
+                    cache[ imgURL ].imgs.push ( $img );
+
+                }
+
+            } else {
+
+                // Init cache object
+                cache[ imgURL ] = {
+                    imgs    : [],
+                    response: null
+                };
+
+                // First request to a URL always goes here
+                $.get ( imgURL, function ( d ) {
+
+                    replace ( cache[ imgURL ].response = d, $img );
+
+                }, 'text' );
+
+            }
+
+        } );
     };
-})(jQuery);
+}) ( jQuery );
